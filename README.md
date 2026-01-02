@@ -1,7 +1,7 @@
 # QKD and Quantum Sensing 
 ### Research Internship | IIT Bombay (May 2025 – July 2025)
 
-This repository contains simulations, experimental data analysis, and documentation for two distinct research projects conducted under the supervision of Professor Kasturi Saha at IIT Bombay. The projects focus on Quantum Key Distribution (QKD) implementations and Bayesian Signal Enhancement for quantum sensing[cite: 18, 21].
+This repository contains simulations, experimental data analysis, and documentation for two distinct research projects conducted  at IIT Bombay. The projects focus on Quantum Key Distribution (QKD) implementations and Bayesian Signal Enhancement for quantum sensing.
 
 ---
 
@@ -15,7 +15,8 @@ This repository contains simulations, experimental data analysis, and documentat
 ## Project I: Experimental Quantum Cryptography (BB84 Protocol)
 
 ### Overview
-This project involved the setup, simulation, and analysis of quantum cryptography protocols using a Thorlabs Quantum Cryptography Demonstration Kit. The primary objective was to demonstrate secure key distribution using light polarization and experimentally validate the security of the BB84 protocol in the presence of an eavesdropper.
+This project involved the setup, simulation, and analysis of quantum cryptography protocols using a Thorlabs Quantum Cryptography Demonstration Kit. The primary objective was to demonstrate secure key distribution using light polarization and experimentally validate the security of the BB84 protocol in the presence of an eavesdropper. My responsibility was to set up the experiment and simulation of BB84, rest of two protocol B92 and E91 was implemented by my partner.
+
 
 ### Key Implementations
 
@@ -48,14 +49,14 @@ The repository includes data derived from the optical setup:
 
 ### Overview
 This module contains a MATLAB implementation of a Bayesian photon-number-resolving algorithm for Electron Multiplying Charge Coupled Device (EMCCD) cameras.
-The project reproduces the methodology described in *Chatterjee et al. (2024)[cite_start]*, demonstrating how statistical inference can recover multi-photon events from noisy analog signals. [cite_start]By resolving discrete photon numbers ($n=0, 1, 2, 3...$) rather than using a standard binary threshold, this method significantly enhances the Signal to Noise Ratio (SNR) for applications involving Nitrogen Vacancy (NV) centers.
+The project reproduces the methodology described in *Chatterjee et al. (2024).*, demonstrating how statistical inference can recover multi-photon events from noisy analog signals. By resolving discrete photon numbers ($n=0, 1, 2, 3...$) rather than using a standard binary threshold, this method significantly enhances the Signal to Noise Ratio (SNR) for applications involving Nitrogen Vacancy (NV) centers.
 
 ### Key Features
 * **Virtual EMCCD Simulator:** Generates synthetic raw data simulating Poissonian photon statistics, stochastic gain (Gamma distribution), Clock Induced Charge (CIC), and Gaussian readout noise.
 * **Bayesian Thresholding:** Calculates pixel-wise probability thresholds to distinguish between $k$ and $k+1$ photons based on local beam intensity.
 * **SNR Enhancement:** Demonstrates a significant improvement in contrast for spatially correlated photon beams compared to standard binary counting.
 * **Robustness Analysis:** Characterizes algorithm performance across different EMCCD gain settings.
-* **Quantum Sensing Application:** Simulates high-flux Optically Detected Magnetic Resonance (ODMR) experiments to showcase sensitivity gains in widefield magnetometry.
+* **Quantum Sensing Application:** Simulates high-flux Optically Detected Magnetic Resonance (ODMR) experiments to showcase sensitivity gains in NV centers.
 
 ### Module Structure
 The MATLAB scripts are organized into five logical modules:
