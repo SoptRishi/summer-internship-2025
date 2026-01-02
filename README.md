@@ -34,7 +34,6 @@ This project involved the setup, simulation, and analysis of quantum cryptograph
 * **E91 (Ekert) Protocol:** Analyzed entanglement-based security, studying how Bell’s inequality violations can certify the absence of an eavesdropper, shifting the trust model from the source to the channel statistics.
 
 ### Experimental Data
-The repository includes data derived from the optical setup:
 
 * **No Eavesdropper Scenario:**
     * *Raw Key Length:* 31 bits (from 50 transmitted).
