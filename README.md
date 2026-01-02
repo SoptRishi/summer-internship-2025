@@ -73,11 +73,11 @@ The MATLAB scripts are organized into five logical modules:
     * Compares the SNR of the new Resolved Method vs. the standard Binary Method.
     * *Output:* SNR metrics and improvement factor.
 
-4.  **`4_Robustness_Study.m`** *(Standalone)*
+4.  **`4_Robustness_Study.m`** 
     * Performs a parameter sweep (SNR vs EMCCD Gain) to determine the minimum experimental gain required for effective photon resolution.
     * *Output:* Plot of Improvement Factor vs. Gain.
 
-5.  **`5_NV_Center_ODMR.m`** *(Standalone)*
+5.  **`5_NV_Center_ODMR.m`** 
     * Simulates an ODMR frequency sweep for an NV center in the high-flux (saturation) regime.
     * Demonstrates how resolving multi-photon events prevents signal saturation and recovers the true depth of the magnetic resonance dip.
     * *Output:* ODMR spectrum plot and Sensitivity Gain metric.
