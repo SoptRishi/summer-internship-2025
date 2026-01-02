@@ -98,5 +98,5 @@ $$P(x|k) = \frac{x^{k-1} e^{-x/G}}{G^k (k-1)!} * \mathcal{N}(0, \sigma_N^2)$$
 
 ---
 
-[cite_start]*This repository is maintained by **Saptarshi Das**[cite: 2].*
-[cite_start]*Email: saptarshi.das090@gmail.com [cite: 3]*
+
+*Email: saptarshi.das090@gmail.com [cite: 3]*
