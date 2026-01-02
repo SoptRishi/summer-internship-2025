@@ -24,8 +24,8 @@ This project involved the setup, simulation, and analysis of quantum cryptograph
 **Experimental Setup:** Built a demonstration kit using Polarizing Beam Splitters and Half-Wave Plates to encode and decode classical bits into polarization states.
 * **Protocol Execution:**
     * Implemented the standard four-state protocol using rectilinear ($0^\circ, 90^\circ$) and diagonal ($45^\circ, -45^\circ$) polarization bases.
-    * xecuted the public channel comparison where Alice and Bob discard bits measured in mismatched bases.
-    * mplemented `BB84 Simulation.ipynb` to model the protocol numerically and verify theoretical outcomes.
+    * Executed the public channel comparison where Alice and Bob discard bits measured in mismatched bases.
+    * Implemented `BB84 Simulation.ipynb` to model the protocol numerically and verify theoretical outcomes.
 * **Security Analysis:**
   **Eavesdropping Detection:** Demonstrated that an intercept-resend attack by Eve introduces a detectable error rate of ~25% in the quantum bit error rate (QBER), forcing the protocol to abort.
 
@@ -41,7 +41,7 @@ The repository includes data derived from the optical setup:
     * *Result:* Perfect decryption of the word "BLUE".
 * **With Eavesdropper Scenario:**
     * *Error Rate:* Observed **22.72%** error rate (close to the theoretical 25%), successfully flagging the intrusion.
-    * Result:* Decryption failed completely (outputting "I?RH" instead of "BLUE").
+    * Result: Decryption failed completely (outputting "I?RH" instead of "BLUE").
 
 ---
 
