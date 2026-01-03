@@ -1,10 +1,12 @@
+
+
 % EMCCD Sensor Simulation
 % Simulates photon arrival, electron multiplication, and readout noise.
 % Based on standard probabilistic models for EMCCD detectors.
 
 clear; clc;
 
-% -- System Configuration --
+%Configuration
 Gain = 300;            % Mean gain (G)
 ReadNoise = 14.19;     % Readout noise sigma
 Prob_CIC = 0.0477;     % Clock Induced Charge probability
@@ -12,14 +14,14 @@ N_frames = 1000;       % Total frames
 img_h = 100;           % Sensor height
 img_w = 100;           % Sensor width
 
-% -- Beam Profile Generation --
+% Beam Profile
 [X, Y] = meshgrid(1:img_w, 1:img_h);
 mu_center = 2.0;       % Peak intensity (photons/pixel)
 beam_width = 15;       % Spatial sigma
 % Gaussian intensity distribution I(x,y)
 Intensity_Map = mu_center * exp(-((X - img_w/2).^2 + (Y - img_h/2).^2) / (2 * beam_width^2));
 
-% -- Acquisition Loop --
+% Acquisition
 Raw_Stack = zeros(img_h, img_w, N_frames);
 
 disp('Starting acquisition simulation...');
