@@ -46,50 +46,60 @@ This project involved the setup, simulation, and analysis of quantum cryptograph
 
 ## Project II: Bayesian Photon Number Resolving for EMCCD Cameras
 
-### Overview
-This module contains a MATLAB implementation of a Bayesian photon-number-resolving algorithm for Electron Multiplying Charge Coupled Device (EMCCD) cameras.
-The project reproduces the methodology described in *Chatterjee et al. (2024).*, demonstrating how statistical inference can recover multi-photon events from noisy analog signals. By resolving discrete photon numbers ($n=0, 1, 2, 3...$) rather than using a standard binary threshold, this method significantly enhances the Signal to Noise Ratio (SNR) for applications involving Nitrogen Vacancy (NV) centers.
+## Overview
 
-### Key Features
+This module contains a MATLAB implementation of a Bayesian photon-number-resolving algorithm for Electron Multiplying Charge Coupled Device (EMCCD) cameras.
+
+The project reproduces the methodology described in **Chatterjee et al. (2024)**, demonstrating how statistical inference can recover multi-photon events from noisy analog signals. By resolving discrete photon numbers () rather than using a standard binary threshold, this method significantly enhances the Signal to Noise Ratio (SNR) for applications involving Nitrogen-Vacancy (NV) centers and other low-light quantum systems.
+
+## Key Features
+
 * **Virtual EMCCD Simulator:** Generates synthetic raw data simulating Poissonian photon statistics, stochastic gain (Gamma distribution), Clock Induced Charge (CIC), and Gaussian readout noise.
-* **Bayesian Thresholding:** Calculates pixel-wise probability thresholds to distinguish between $k$ and $k+1$ photons based on local beam intensity.
+* **Bayesian Thresholding:** Calculates pixel-wise probability thresholds to distinguish between  and  photons based on local beam intensity.
 * **SNR Enhancement:** Demonstrates a significant improvement in contrast for spatially correlated photon beams compared to standard binary counting.
 * **Robustness Analysis:** Characterizes algorithm performance across different EMCCD gain settings.
 * **Quantum Sensing Application:** Simulates high-flux Optically Detected Magnetic Resonance (ODMR) experiments to showcase sensitivity gains in NV centers.
 
-### Module Structure
-The MATLAB scripts are organized into five logical modules:
+## Module Structure
 
-1.  **`1_Data_Generation.m`**
-    * Simulates the physical EMCCD camera and generates a stack of raw analog frames from a Gaussian beam profile.
-    * *Output:* `emccd_stack` (Raw 3D data matrix).
+The MATLAB scripts are organized into five logical modules. They should be run in the following order:
 
-2.  **`2_Threshold_Calibration.m`**
-    * Performs Bayesian inversion to generate a Threshold Map for the entire image. It calculates the optimal count boundaries for detecting 0, 1, 2, or 3 photons at every pixel.
-    * *Output:* `threshold_map_stack` (Map of T1, T2, T3 thresholds).
+### 1. `data_generation.m`
 
-3.  **`3_Photon_Tagging_SNR.m`**
-    * Applies the threshold map to the raw data to tag discrete photons.
-    * Compares the SNR of the new Resolved Method vs. the standard Binary Method.
-    * *Output:* SNR metrics and improvement factor.
+Simulates the physical EMCCD camera and generates a stack of raw analog frames from a Gaussian beam profile.
 
-4.  **`4_Robustness_Study.m`** 
-    * Performs a parameter sweep (SNR vs EMCCD Gain) to determine the minimum experimental gain required for effective photon resolution.
-    * *Output:* Plot of Improvement Factor vs. Gain.
+* **Key Output:** `Raw_Stack` (3D matrix of simulated analog counts).
 
-5.  **`5_NV_Center_ODMR.m`** 
-    * Simulates an ODMR frequency sweep for an NV center in the high-flux (saturation) regime.
-    * Demonstrates how resolving multi-photon events prevents signal saturation and recovers the true depth of the magnetic resonance dip.
-    * *Output:* ODMR spectrum plot and Sensitivity Gain metric.
+### 2. `calibrate_thresholds.m`
 
-### Physics & References
-This work relies on the statistical model where the output count $x$ for $k$ input electrons follows a Gamma distribution convolved with Gaussian readout noise:
+Performs Bayesian inversion to generate a "Threshold Map" for the entire image. It calculates the optimal count boundaries for detecting 0, 1, 2, or 3 photons at every pixel based on the local mean intensity.
 
-$$P(x|k) = \frac{x^{k-1} e^{-x/G}}{G^k (k-1)!} * \mathcal{N}(0, \sigma_N^2)$$
+* **Key Output:** `Thresh_Map` (Spatial map of T1, T2, T3, T4 thresholds).
 
-* **Reference:** Chatterjee, R., Bhat, V. S., Bajar, K., & Mujumdar, S. (2024). *Multifold enhancement of quantum SNR by using an EMCCD as a photon number resolving device*. arXiv:2312.04184.
+### 3. `process_data.m`
 
----
+Applies the calibrated threshold map to the raw data to "tag" discrete photons. It then performs a comparative analysis of the SNR obtained via the new Resolved Method versus the standard Binary Method.
+
+* **Key Output:** Console printout of SNR metrics and Improvement Factor.
+
+### 4. `parameter_sweep.m` (Standalone)
+
+Performs a parameter sweep (SNR vs. EMCCD Gain) to determine the minimum experimental gain required for effective photon resolution.
+
+* **Key Output:** Plot of Improvement Factor vs. Gain.
+
+### 5. `odmr_simulation.m` (Standalone)
+
+Simulates an ODMR frequency sweep for an NV center in the high-flux (saturation) regime. This script demonstrates how resolving multi-photon events prevents signal saturation and recovers the true depth of the magnetic resonance dip.
+
+* **Key Output:** ODMR spectrum plot and Sensitivity Gain metric.
+
+## Physics & References
+
+This work relies on the statistical model where the output count  for  input electrons follows a Gamma distribution convolved with Gaussian readout noise:
+
+**Reference:**
+Chatterjee, R., Bhat, V. S., Bajar, K., & Mujumdar, S. (2024). *Multifold enhancement of quantum SNR by using an EMCCD as a photon number resolving device*. arXiv:2312.04184.
 
 ## Skills & Tools
 * **Programming:** MATLAB (Numerical Simulations), Python (Data Analysis).
