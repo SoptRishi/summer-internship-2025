@@ -1,0 +1,123 @@
+import numpy as np
+from qiskit import QuantumCircuit, transpile
+from qiskit_aer import Aer
+import binascii
+
+# Helper Functions for Text Encryption 
+def text_to_bits(text, encoding='utf-8', errors='surrogatepass'):
+    bits = bin(int(binascii.hexlify(text.encode(encoding, errors)), 16))[2:]
+    return bits.zfill(8 * ((len(bits) + 7) // 8))
+
+def bits_to_text(bits, encoding='utf-8', errors='replace'):
+    try:
+        n = int(bits, 2)
+        return binascii.unhexlify('%x' % n).decode(encoding, errors)
+    except:
+        return "[Decryption Error]"
+
+def xor_encrypt(message_bits, key_bits):
+    length = min(len(message_bits), len(key_bits))
+    encrypted = []
+    for i in range(length):
+        encrypted.append(str(int(message_bits[i]) ^ int(key_bits[i])))
+    return "".join(encrypted)
+
+# BB84 Protocol Simulation
+def simulate_bb84_transmission(total_qubits, chunk_size=24):
+    """
+    Simulates transmission in batches to avoid simulator memory limits.
+    Max qubits per circuit set to 'chunk_size' (safe limit ~24-29).
+    """
+    # Lists to hold the aggregated results
+    full_alice_bits = []
+    full_alice_bases = []
+    full_bob_bits = []
+    full_bob_bases = []
+    
+    backend = Aer.get_backend('qasm_simulator')
+    
+    # Process in chunks
+    for i in range(0, total_qubits, chunk_size):
+        # Determine size of current batch (handle last batch remainder)
+        current_n = min(chunk_size, total_qubits - i)
+        
+        # --- Standard BB84 Logic for this Batch ---
+        alice_bits = np.random.randint(0, 2, size=current_n)
+        alice_bases = np.random.randint(0, 2, size=current_n)
+        bob_bases = np.random.randint(0, 2, size=current_n)
+        
+        qc = QuantumCircuit(current_n, current_n)
+        
+        # Alice Encodes
+        for j in range(current_n):
+            if alice_bits[j] == 1: qc.x(j)
+            if alice_bases[j] == 1: qc.h(j)
+            
+        # Bob Measures
+        for j in range(current_n):
+            if bob_bases[j] == 1: qc.h(j)
+            qc.measure(j, j)
+            
+        # Run Batch
+        transpiled_qc = transpile(qc, backend)
+        result = backend.run(transpiled_qc, shots=1).result()
+        counts = result.get_counts()
+        
+        measured_str = list(counts.keys())[0][::-1]
+        bob_bits = np.array([int(bit) for bit in measured_str])
+        
+        # Append Batch Results
+        full_alice_bits.extend(alice_bits)
+        full_alice_bases.extend(alice_bases)
+        full_bob_bits.extend(bob_bits)
+        full_bob_bases.extend(bob_bases)
+
+    return (np.array(full_alice_bits), np.array(full_alice_bases), 
+            np.array(full_bob_bits), np.array(full_bob_bases))
+
+# Execution & Message Decryption
+
+# upto 120 bits can be handled
+N_TRANSMITTED = 120
+
+print(f"--- Starting BB84 Simulation (N={N_TRANSMITTED}) ---")
+alice_bits, alice_bases, bob_bits, bob_bases = simulate_bb84_transmission(N_TRANSMITTED)
+
+# Basis Reconciliation (Sifting)
+sifted_key = []
+for i in range(N_TRANSMITTED):
+    if alice_bases[i] == bob_bases[i]:
+        sifted_key.append(bob_bits[i])
+
+sifted_key = np.array(sifted_key)
+
+print(f"Transmission Complete.")
+print(f"Total Photons Sent: {N_TRANSMITTED}")
+print(f"Sifted Key Length: {len(sifted_key)} bits (Raw Key)")
+
+#Secure Message Transmission ("BLUE") ]
+original_msg = "BLUE"
+print(f"\n--- Experiment: Encrypting '{original_msg}' ---")
+
+msg_bin = text_to_bits(original_msg)
+key_bin = "".join(map(str, sifted_key))
+
+# Ensure key is long enough
+if len(key_bin) >= len(msg_bin):
+    # Encrypt
+    cipher_text = xor_encrypt(msg_bin, key_bin)
+    print(f"Original Binary: {msg_bin}")
+    print(f"Cipher Text:     {cipher_text}")
+
+    # Decrypt
+    decrypted_bin = xor_encrypt(cipher_text, key_bin)
+    decrypted_msg = bits_to_text(decrypted_bin)
+
+    print(f"\nBob Decrypted:   '{decrypted_msg}'")
+
+    if decrypted_msg == original_msg:
+        print("RESULT: SUCCESS - Message perfectly recovered.")
+    else:
+        print("RESULT: FAILURE - Message corrupted.")
+else:
+    print(f"Error: Generated key ({len(key_bin)} bits) is too short for message ({len(msg_bin)} bits). Increase N_TRANSMITTED.")
