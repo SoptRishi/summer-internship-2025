@@ -1,0 +1,126 @@
+import numpy as np
+from qiskit import QuantumCircuit, transpile
+from qiskit_aer import Aer
+import binascii
+
+# Helper Functions
+def text_to_bits(text):
+    return bin(int(binascii.hexlify(text.encode('utf-8')), 16))[2:].zfill(8 * len(text))
+
+def bits_to_text(bits):
+    try:
+        return binascii.unhexlify('%x' % int(bits, 2)).decode('utf-8', errors='replace')
+    except:
+        return "?"
+
+def xor_ops(s1, s2):
+    return "".join([str(int(a) ^ int(b)) for a, b in zip(s1, s2)])
+
+#Eavesdropper Simulation
+class EavesdropperSimulation:
+    def __init__(self, n_qubits):
+        self.total_qubits = n_qubits
+        self.chunk_size = 24  # Process in small chunks to avoid memory errors
+        self.backend = Aer.get_backend('qasm_simulator')
+
+    def run_protocol(self):
+        # Result containers
+        full_alice_bits, full_alice_bases = [], []
+        full_bob_bits, full_bob_bases = [], []
+        
+        # Batch Processing
+        for i in range(0, self.total_qubits, self.chunk_size):
+            n = min(self.chunk_size, self.total_qubits - i)
+            
+            # --- Alice Prepares ---
+            alice_bits = np.random.randint(0, 2, n)
+            alice_bases = np.random.randint(0, 2, n)
+            
+            qc = QuantumCircuit(n, n)
+            for j in range(n):
+                if alice_bits[j] == 1: qc.x(j)
+                if alice_bases[j] == 1: qc.h(j)
+            
+            # --- Eve Intercepts ---
+            eve_bases = np.random.randint(0, 2, n)
+            for j in range(n):
+                if eve_bases[j] == 1: qc.h(j)
+            qc.measure(range(n), range(n))
+            
+            # Measure Eve
+            res_eve = self.backend.run(transpile(qc, self.backend), shots=1).result()
+            eve_bits = [int(b) for b in list(res_eve.get_counts().keys())[0][::-1]]
+            
+            # --- Eve Resends (New Circuit) ---
+            qc_resend = QuantumCircuit(n, n)
+            for j in range(n):
+                if eve_bits[j] == 1: qc_resend.x(j)
+                if eve_bases[j] == 1: qc_resend.h(j) # Resend in the basis she measured
+            
+            # --- Bob Measures ---
+            bob_bases = np.random.randint(0, 2, n)
+            for j in range(n):
+                if bob_bases[j] == 1: qc_resend.h(j)
+            qc_resend.measure(range(n), range(n))
+            
+            # Measure Bob
+            res_bob = self.backend.run(transpile(qc_resend, self.backend), shots=1).result()
+            bob_bits = [int(b) for b in list(res_bob.get_counts().keys())[0][::-1]]
+            
+            # Store Batch Data
+            full_alice_bits.extend(alice_bits)
+            full_alice_bases.extend(alice_bases)
+            full_bob_bits.extend(bob_bits)
+            full_bob_bases.extend(bob_bases)
+            
+        return (np.array(full_alice_bits), np.array(full_alice_bases), 
+                np.array(full_bob_bits), np.array(full_bob_bases))
+
+# Analysis and QBER Calculation
+
+N = 150 
+sim = EavesdropperSimulation(N)
+alice_bits, alice_bases, bob_bits, bob_bases = sim.run_protocol()
+
+# Sifting
+matching_bases_indices = [i for i in range(N) if alice_bases[i] == bob_bases[i]]
+alice_key = [alice_bits[i] for i in matching_bases_indices]
+bob_key = [bob_bits[i] for i in matching_bases_indices]
+
+# Error Calculation
+errors = 0
+for a, b in zip(alice_key, bob_key):
+    if a != b:
+        errors += 1
+
+qber = errors / len(alice_key) if len(alice_key) > 0 else 0
+
+print(f"--- Security Analysis Results ---")
+print(f"Sifted Key Length: {len(alice_key)}")
+print(f"Bit Errors Found:  {errors}")
+print(f"Calculated QBER:   {qber:.2%} (Target ~25%)")
+
+if qber > 0.15:
+    print("\n[ALERT] High QBER detected! Eavesdropper is present.")
+
+#The 'BLUE' Decryption Failure
+print(f"\n--- Demonstrating Data Corruption ---")
+msg = "BLUE"
+msg_bin = text_to_bits(msg)
+
+# Truncate keys to message length
+alice_key_str = "".join(map(str, alice_key))[:len(msg_bin)]
+bob_key_str = "".join(map(str, bob_key))[:len(msg_bin)]
+
+if len(alice_key_str) == len(msg_bin):
+    encrypted = xor_ops(msg_bin, alice_key_str)
+    
+    # Bob tries to decrypt with corrupted key
+    decrypted_bin = xor_ops(encrypted, bob_key_str)
+    corrupted_msg = bits_to_text(decrypted_bin)
+    
+    print(f"Original Message: '{msg}'")
+    print(f"Bob's Decryption: '{corrupted_msg}'") 
+    print("(Garbage output confirms the attack)")
+else:
+    print("Not enough key bits generated for text demo.")
