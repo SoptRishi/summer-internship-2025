@@ -16,6 +16,8 @@ This repository contains simulations, experimental data analysis, and documentat
 
 ### Overview
 This project involved the setup, simulation, and analysis of quantum cryptography protocols using a Thorlabs Quantum Cryptography Demonstration Kit. The primary objective was to demonstrate secure key distribution using light polarization and experimentally validate the security of the BB84 protocol in the presence of an eavesdropper. My responsibility was to set up the experiment and simulation of BB84, rest of two protocol B92 and E91 was implemented by my partner.
+
+
 <img src="qkd.jpeg" alt="Description of Image" width="600">
 
 ### Key Implementations
