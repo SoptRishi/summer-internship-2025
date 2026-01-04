@@ -15,35 +15,65 @@ This repository contains simulations, experimental data analysis, and documentat
 ## Project I: Experimental Quantum Cryptography (BB84 Protocol)
 
 ### Overview
-This project involved the setup, simulation, and analysis of quantum cryptography protocols using a Thorlabs Quantum Cryptography Demonstration Kit. The primary objective was to demonstrate secure key distribution using light polarization and experimentally validate the security of the BB84 protocol in the presence of an eavesdropper. My responsibility was to set up the experiment and simulation of BB84, rest of two protocol B92 and E91 was implemented by my partner.
 
+This project focused on the experimental setup, simulation, and analysis of quantum key distribution (QKD) using a Thorlabs Quantum Cryptography Demonstration Kit. The primary objective was to demonstrate secure communication using light polarization and to experimentally validate the security of the BB84 protocol against eavesdropping attacks.
 
-<img src="qkd.jpeg" alt="Description of Image" width="600">
+* **Role:** set up the experiment & simulate BB84. (Collaborated with a partner who implemented B92 and E91 protocols).
+
+<img src="qkd.jpeg" alt="Quantum Key Distribution Setup" width="600">
 
 ### Key Implementations
 
 #### 1. BB84 Protocol (Experimental & Simulation)
-**Experimental Setup:** Built a demonstration kit using Polarizing Beam Splitters and Half-Wave Plates to encode and decode classical bits into polarization states.
+
+**Experimental Setup:** Constructed a free space optical line using Polarizing Beam Splitters (PBS) and Half-Wave Plates (HWP) to encode classical bits into photon polarization states.
+
 * **Protocol Execution:**
-    * Implemented the standard four-state protocol using rectilinear ($0^\circ, 90^\circ$) and diagonal ($45^\circ, -45^\circ$) polarization bases.
-    * Executed the public channel comparison where Alice and Bob discard bits measured in mismatched bases.
-    * Implemented `BB84 Simulation.ipynb` to model the protocol numerically and verify theoretical outcomes.
-* **Security Analysis:**
-  **Eavesdropping Detection:** Demonstrated that an intercept-resend attack by Eve introduces a detectable error rate of ~25% in the quantum bit error rate (QBER), forcing the protocol to abort.
+* Implemented the standard four-state protocol using Rectilinear () and Diagonal () polarization bases.
+* Executed the Sifting Process (basis reconciliation) over a public channel, where Alice and Bob discard bits measured in mismatched bases.
+* Developed `BB84_Simulation.py` (using Qiskit) to model the protocol numerically and verify theoretical error rates.
+
+
+* **Security Analysis (Eavesdropping):**
+* Simulated an Intercept-Resend Attack where an eavesdropper ("Eve") measures and resends photons.
+* Demonstrated that this attack introduces a Quantum Bit Error Rate (QBER) of , satisfying the theoretical threshold to abort the protocol.
+
+
 
 #### 2. Theoretical Analysis (B92 & E91)
-* **B92 Protocol:** Conducted a theoretical trade-off analysis comparing BB84 to B92. While B92 requires fewer states (two non-orthogonal), it was found to generate fewer usable keys due to higher discard rates inherent to its angular dependencies.
-* **E91 (Ekert) Protocol:** Analyzed entanglement-based security, studying how Bell’s inequality violations can certify the absence of an eavesdropper, shifting the trust model from the source to the channel statistics.
 
-### Experimental Data
+* **B92 Protocol:** Conducted a trade-off analysis comparing BB84 to B92. Concluded that while B92 requires fewer states (two non-orthogonal), it suffers from higher discard rates and lower key generation efficiency due to angular dependencies.
+* **E91 (Ekert) Protocol:** Analyzed entanglement-based security, studying how Bell’s Inequality violations (CHSH test) can certify the absence of an eavesdropper, shifting the trust model from the source to the channel statistics.
 
-* **No Eavesdropper Scenario:**
-    * *Raw Key Length:* 31 bits (from 50 transmitted).
-    * *Result:* Perfect decryption of the word "BLUE".
-* **With Eavesdropper Scenario:**
-    * *Error Rate:* Observed **22.72%** error rate (close to the theoretical 25%), successfully flagging the intrusion.
-    * Result: Decryption failed completely (outputting "I?RH" instead of "BLUE").
+---
 
+### Experimental & Simulation Data
+
+#### **Scenario A: Secure Transmission (No Eavesdropper)**
+
+* **Transmission:** 50 photons sent.
+* **Sifted Key Length:** 32 bits 
+* **Result:** Success. The generated key perfectly decrypted the target message:
+> "BLUE"  `01000010 01001100 01010101 01000101`
+
+
+
+#### **Scenario B: Intercept-Resend Attack (With Eavesdropper)**
+
+* **Observed Error Rate (QBER):** **22.72%** * *Note: This is statistically consistent with the theoretical limit of 25% for small sample sizes.*
+* **Result:** Failure. The high error rate was successfully flagged by the system.
+* Attempted decryption resulted in corrupted text (Output: I?RH ), confirming the intrusion was detected and the key was discarded.
+
+
+
+---
+
+### Code Structure
+
+The repository includes the following Python scripts used for verification:
+
+* `bb84_sim.py`: Simulates the ideal transmission and basis reconciliation.
+* `eavesdropper_sim.py`: Models the "Eve" scenario and calculates QBER.
 ---
 
 ## Project II: Bayesian Photon Number Resolving for EMCCD Cameras
